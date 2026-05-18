@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, User, Clock, Eye, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, User, Clock, Tag } from "lucide-react";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
