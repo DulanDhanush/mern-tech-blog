@@ -198,25 +198,26 @@ mern-tech-blog/
 ```
 
 ---
-🎥 Demo Video
+### 🎥 Demo Video
 
+***https://dulanblogs.vercel.app***
 
 ---
 
 ### 👥 Meet the Engineering Team
 
 - **Dulan Dhanush** – Lead Developer
-Architected the full MERN stack implementation, from database schemas to React UI and production deployment.
+    Architected the full MERN stack implementation, from database schemas to React UI and production deployment.
 
 - **K.G.L. Sandanimne** – Developer
-Assisted with deployment, enhanced the user interface, and contributed to the overall frontend polish.
+    Assisted with deployment, enhanced the user interface, and contributed to the overall frontend polish.
 
     “Turning technical stories into a seamless blogging experience.”
 
 ---
 ### 📄 License
 
-This project is licensed under the ISC License
+    This project is licensed under the ISC License
 
 ---
 ### 🙏 Acknowledgements
