@@ -200,7 +200,7 @@ mern-tech-blog/
 ---
 ### 🎥 Demo Video
 
-***https://dulanblogs.vercel.app***
+
 
 ---
 
