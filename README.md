@@ -211,10 +211,14 @@ Architected the full MERN stack implementation, from database schemas to React U
 - **K.G.L. Sandanimne** – Developer
 Assisted with deployment, enhanced the user interface, and contributed to the overall frontend polish.
 
-“Turning technical stories into a seamless blogging experience.”
+    “Turning technical stories into a seamless blogging experience.”
 
 ---
+### 📄 License
 
+This project is licensed under the ISC License
+
+---
 ### 🙏 Acknowledgements
 
 - Create React App team for the solid bootstrapping.
