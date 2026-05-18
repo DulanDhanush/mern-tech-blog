@@ -25,11 +25,10 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
-    setIsMobileMenuOpen(false); // Close menu on logout
+    setIsMobileMenuOpen(false);
     navigate("/");
   };
 
-  // Helper to close menu when a link is clicked on mobile
   const closeMenu = () => setIsMobileMenuOpen(false);
 
   return (
@@ -39,11 +38,9 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="w-full pt-6 px-4 mb-4 sticky top-0 z-50 pointer-events-none"
     >
-      {/* The main Glassmorphic Container */}
       <nav className="container mx-auto max-w-6xl rounded-2xl border border-white/10 bg-[#0F172A]/80 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] pointer-events-auto transition-all duration-300 overflow-hidden">
-        {/* ============ TOP BAR (Always Visible) ============ */}
+        {/* TOP BAR */}
         <div className="px-6 py-4 flex justify-between items-center">
-          {/* Logo Section */}
           <Link
             to="/"
             onClick={closeMenu}
@@ -61,7 +58,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* ============ DESKTOP NAVIGATION (Hidden on Mobile) ============ */}
+          {/* DESKTOP NAVIGATION */}
           <div className="hidden md:flex items-center space-x-2 bg-[#0A0F1A]/40 px-3 py-1.5 rounded-xl border border-white/5">
             <Link
               to="/"
@@ -117,7 +114,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* ============ MOBILE MENU TRIGGER (Hidden on Desktop) ============ */}
+          {/* MOBILE MENU TRIGGER */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -132,7 +129,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* ============ MOBILE DROPDOWN LIST (Animated) ============ */}
+        {/* MOBILE DROPDOWN LIST */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div

@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Link,
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/Navbar";
@@ -12,15 +13,17 @@ import BlogPost from "./pages/BlogPost";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import Feedback from "./pages/Feedback";
+import SystemStatus from "./pages/SystemStatus";
+import Legal from "./pages/Legal";
 
-// 1. Cinematic Route Transitions Component
+// Cinematic Route Transitions Component
 const PageWrapper = ({ children }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 15, scale: 0.98, filter: "blur(8px)" }}
       animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, y: -15, scale: 0.98, filter: "blur(8px)" }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} // Custom Apple-like spring easing
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="w-full"
     >
       {children}
@@ -28,7 +31,7 @@ const PageWrapper = ({ children }) => {
   );
 };
 
-// 2. Scroll Restoration (Forces page to top when clicking a new link)
+// Scroll Restoration
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -37,7 +40,7 @@ const ScrollToTop = () => {
   return null;
 };
 
-// 3. The Animated Router
+// The Animated Router
 const AnimatedRoutes = () => {
   const location = useLocation();
 
@@ -84,22 +87,35 @@ const AnimatedRoutes = () => {
             </PageWrapper>
           }
         />
+        <Route
+          path="/status"
+          element={
+            <PageWrapper>
+              <SystemStatus />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/legal"
+          element={
+            <PageWrapper>
+              <Legal />
+            </PageWrapper>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
 };
 
-// 4. The Main App Container
+// The Main App Container
 function App() {
   return (
     <Router>
       <ScrollToTop />
 
-      {/* 
-        THE AMBIENT ENGINE 
-        This sits behind everything and breathes life into the dark mode.
-      */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-dark">
+      {/* THE AMBIENT ENGINE */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#0A0F1A]">
         {/* Breathing Primary Orb */}
         <motion.div
           animate={{
@@ -143,19 +159,32 @@ function App() {
         {/* Minimalist Global Footer */}
         <footer className="border-t border-white/5 py-8 mt-auto backdrop-blur-md bg-dark/30">
           <div className="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-textSecondary text-sm font-medium">
-              © {new Date().getFullYear()} TechBlog. Engineered for the future.
+            <p className="text-slate-400 text-sm font-medium">
+              © {new Date().getFullYear()} DulanBlog. Engineered for the future.
             </p>
-            <div className="flex items-center gap-6 text-sm font-semibold text-textSecondary">
-              <span className="hover:text-primary transition-colors cursor-pointer">
+            <div className="flex items-center gap-6 text-sm font-semibold text-slate-400">
+              <Link
+                to="/legal"
+                className="hover:text-[#A259FF] transition-colors cursor-pointer"
+              >
                 Privacy
-              </span>
-              <span className="hover:text-primary transition-colors cursor-pointer">
+              </Link>
+              <Link
+                to="/legal"
+                className="hover:text-[#A259FF] transition-colors cursor-pointer"
+              >
                 Terms
-              </span>
-              <span className="hover:text-primary transition-colors cursor-pointer">
+              </Link>
+              <Link
+                to="/status"
+                className="hover:text-[#20C997] transition-colors cursor-pointer flex items-center gap-2"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
                 System Status
-              </span>
+              </Link>
             </div>
           </div>
         </footer>
