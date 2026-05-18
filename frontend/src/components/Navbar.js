@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
   Shield,
@@ -8,10 +8,13 @@ import {
   LogIn,
   Sparkles,
   MessageSquare,
+  Menu,
+  X,
 } from "lucide-react";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,8 +25,12 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setIsMobileMenuOpen(false); // Close menu on logout
     navigate("/");
   };
+
+  // Helper to close menu when a link is clicked on mobile
+  const closeMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <motion.div
@@ -32,10 +39,16 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="w-full pt-6 px-4 mb-4 sticky top-0 z-50 pointer-events-none"
     >
-      <nav className="container mx-auto max-w-6xl rounded-2xl border border-white/10 bg-[#0F172A]/70 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] pointer-events-auto transition-all duration-300">
+      {/* The main Glassmorphic Container */}
+      <nav className="container mx-auto max-w-6xl rounded-2xl border border-white/10 bg-[#0F172A]/80 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] pointer-events-auto transition-all duration-300 overflow-hidden">
+        {/* ============ TOP BAR (Always Visible) ============ */}
         <div className="px-6 py-4 flex justify-between items-center">
-          {/* Logo Section with Dynamic Interactive Icon */}
-          <Link to="/" className="flex items-center gap-2.5 group">
+          {/* Logo Section */}
+          <Link
+            to="/"
+            onClick={closeMenu}
+            className="flex items-center gap-2.5 group"
+          >
             <motion.div
               whileHover={{ rotate: 180, scale: 1.1 }}
               transition={{ type: "spring", stiffness: 200, damping: 10 }}
@@ -44,27 +57,26 @@ const Navbar = () => {
               <Sparkles className="text-[#A259FF] w-5 h-5" />
             </motion.div>
             <span className="text-2xl font-black bg-gradient-to-r from-[#A259FF] to-[#20C997] bg-clip-text text-transparent tracking-tight group-hover:opacity-80 transition-opacity">
-              TechBlog
+              DulanBlogs.
             </span>
           </Link>
 
-          {/* Action Links Capsule */}
-          <div className="flex items-center space-x-1 md:space-x-2 bg-[#0A0F1A]/40 px-3 py-1.5 rounded-xl border border-white/5">
+          {/* ============ DESKTOP NAVIGATION (Hidden on Mobile) ============ */}
+          <div className="hidden md:flex items-center space-x-2 bg-[#0A0F1A]/40 px-3 py-1.5 rounded-xl border border-white/5">
             <Link
               to="/"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-[#94A3B8] hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
             >
               <Home className="w-4 h-4 text-[#20C997]" />
-              <span className="hidden sm:inline">Home</span>
+              <span>Home</span>
             </Link>
 
-            {/* Next-Gen Feedback Link Added Here */}
             <Link
               to="/feedback"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-[#94A3B8] hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
             >
               <MessageSquare className="w-4 h-4 text-orange-400" />
-              <span className="hidden sm:inline">Feedback</span>
+              <span>Feedback</span>
             </Link>
 
             {isLoggedIn && (
@@ -73,11 +85,11 @@ const Navbar = () => {
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-[#94A3B8] hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
               >
                 <Shield className="w-4 h-4 text-[#A259FF]" />
-                <span className="hidden sm:inline">Admin</span>
+                <span>Admin</span>
               </Link>
             )}
 
-            <div className="h-4 w-[1px] bg-white/10 mx-1 hidden sm:block" />
+            <div className="h-4 w-[1px] bg-white/10 mx-1" />
 
             {isLoggedIn ? (
               <motion.button
@@ -87,7 +99,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-[#EF4444] hover:bg-[#EF4444]/10 hover:text-white transition-all text-sm font-semibold"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Logout</span>
+                <span>Logout</span>
               </motion.button>
             ) : (
               <motion.div
@@ -104,7 +116,86 @@ const Navbar = () => {
               </motion.div>
             )}
           </div>
+
+          {/* ============ MOBILE MENU TRIGGER (Hidden on Desktop) ============ */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-[#94A3B8] hover:text-white focus:outline-none p-2 rounded-lg bg-white/5 border border-white/10 transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6 text-[#EF4444]" />
+              ) : (
+                <Menu className="w-6 h-6 text-[#20C997]" />
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* ============ MOBILE DROPDOWN LIST (Animated) ============ */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="md:hidden border-t border-white/10 bg-[#0A0F1A]/50"
+            >
+              <div className="flex flex-col px-6 py-4 space-y-3">
+                <Link
+                  to="/"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#94A3B8] hover:text-white hover:bg-white/5 transition-all text-base font-medium"
+                >
+                  <Home className="w-5 h-5 text-[#20C997]" />
+                  <span>Home</span>
+                </Link>
+
+                <Link
+                  to="/feedback"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#94A3B8] hover:text-white hover:bg-white/5 transition-all text-base font-medium"
+                >
+                  <MessageSquare className="w-5 h-5 text-orange-400" />
+                  <span>Feedback</span>
+                </Link>
+
+                {isLoggedIn && (
+                  <Link
+                    to="/admin"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#94A3B8] hover:text-white hover:bg-white/5 transition-all text-base font-medium"
+                  >
+                    <Shield className="w-5 h-5 text-[#A259FF]" />
+                    <span>Admin Control Center</span>
+                  </Link>
+                )}
+
+                <div className="h-[1px] w-full bg-white/10 my-2" />
+
+                {isLoggedIn ? (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#EF4444] hover:bg-[#EF4444]/10 transition-all text-base font-semibold w-full text-left"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Secure Logout</span>
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={closeMenu}
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#A259FF] to-[#20C997] text-white px-4 py-3.5 rounded-xl font-bold text-base hover:shadow-[0_4px_20px_rgba(162,89,255,0.3)] transition-all mt-2"
+                  >
+                    <LogIn className="w-5 h-5" />
+                    <span>Login to Account</span>
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </motion.div>
   );
