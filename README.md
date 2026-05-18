@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✍️ MERN Tech Blog
+# ✍️ MERN Dulan Blog
 
 **A Full‑Stack Blogging Platform with Authentication, CRUD, and Modern UI**
 
