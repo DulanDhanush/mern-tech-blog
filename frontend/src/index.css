@@ -2,23 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
+/* -----------------------------------------
+   1. BASE STYLES & GLOBAL CONFIG
+----------------------------------------- */
 @layer base {
   body {
-    @apply bg-[#0A0F1A] text-[#F5F7FA];
+    /* Deep dark background, crisp text, and smooth scrolling */
+    @apply bg-[#0A0F1A] text-[#F5F7FA] antialiased overflow-x-hidden;
+  }
+
+  /* Premium text selection color */
+  ::selection {
+    @apply bg-[#A259FF]/30 text-white;
+  }
+
+  /* --- Next-Gen Custom Scrollbar --- */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0A0F1A;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 10px;
+    border: 2px solid #0A0F1A; /* Creates a sleek padded effect */
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #A259FF; /* Brand color pops on hover */
   }
 }
 
+/* -----------------------------------------
+   2. HIGH-TIER COMPONENT CLASSES
+----------------------------------------- */
 @layer components {
+  /* Premium Primary Button with Glow & Lift Effect */
   .btn-primary {
-    @apply px-6 py-2 bg-[#A259FF] text-white rounded-lg hover:bg-[#8B3FE8] transition-all duration-200;
+    @apply px-6 py-2.5 bg-gradient-to-r from-[#A259FF] to-[#20C997] text-white rounded-xl font-bold 
+           hover:shadow-[0_0_20px_rgba(162,89,255,0.4)] hover:-translate-y-0.5 active:translate-y-0 
+           transition-all duration-300;
   }
+  
+  /* Sleek Secondary Button with Frosted Glass */
   .btn-secondary {
-    @apply px-6 py-2 bg-[#20C997] text-white rounded-lg hover:bg-[#1AA179] transition-all duration-200;
+    @apply px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl font-bold 
+           hover:bg-white/10 hover:border-white/20 hover:shadow-lg transition-all duration-300 backdrop-blur-md;
   }
+
+  /* Ultimate Glassmorphism Card Engine */
   .card {
-    @apply bg-[#0F172A] rounded-xl p-6 border border-[#1E293B] hover:border-[#A259FF] transition-all duration-300;
+    @apply bg-[#0F172A]/60 backdrop-blur-xl rounded-[24px] p-6 border border-white/5 
+           hover:border-[#A259FF]/40 hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition-all duration-500;
   }
+
+  /* Modern Input Fields with Neon Focus Rings */
   .input-field {
-    @apply w-full px-4 py-2 bg-[#1E293B] border border-[#334155] rounded-lg text-[#F5F7FA] focus:outline-none focus:border-[#A259FF] focus:ring-1 focus:ring-[#A259FF];
+    @apply w-full px-5 py-3.5 bg-[#0A0F1A]/50 border border-white/10 rounded-xl text-white 
+           placeholder-[#64748B] focus:outline-none focus:border-[#A259FF] focus:ring-1 
+           focus:ring-[#A259FF] focus:shadow-[0_0_15px_rgba(162,89,255,0.2)] transition-all duration-300;
+  }
+}
+
+/* -----------------------------------------
+   3. ADVANCED UTILITIES & KEYFRAMES
+----------------------------------------- */
+@layer utilities {
+  /* The engine for the flowing gradient text on the Home page */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: flowing-gradient 6s ease infinite;
+  }
+
+  /* Quick-apply utility for extreme frosted glass wherever you need it */
+  .glass-extreme {
+    @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+  }
+}
+
+/* -----------------------------------------
+   4. RAW CSS ANIMATIONS
+----------------------------------------- */
+@keyframes flowing-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

@@ -1,38 +1,66 @@
-.App {
-  text-align: center;
+/* 
+  -------------------------------------------------------------------------
+  1. PREMIUM FONT IMPORTS 
+  'Plus Jakarta Sans' for futuristic, bold headers.
+  'Inter' for highly readable, clean body text.
+  ------------------------------------------------------------------------- 
+*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+/* 
+  -------------------------------------------------------------------------
+  2. ADVANCED TEXT RENDERING
+  Forces the browser engine to draw text shapes with maximum precision.
+  ------------------------------------------------------------------------- 
+*/
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* 
+  -------------------------------------------------------------------------
+  3. FONT FAMILY MAPPING
+  Overrides the default sans-serif to use our premium imports.
+  ------------------------------------------------------------------------- 
+*/
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+h1, h2, h3, h4, h5, h6, .font-black {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em; /* Tighter letter spacing for a more modern tech look */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* 
+  -------------------------------------------------------------------------
+  4. UTILITY: HIDE SCROLLBARS ON SPECIFIC ELEMENTS
+  Use the class "no-scrollbar" on divs where you want horizontal scrolling
+  (like a row of tags) but don't want an ugly scrollbar to appear.
+  ------------------------------------------------------------------------- 
+*/
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
-.App-link {
-  color: #61dafb;
+/* 
+  -------------------------------------------------------------------------
+  5. GLOBAL SMOOTH BEHAVIORS
+  Ensures native anchor links glide instead of jump.
+  ------------------------------------------------------------------------- 
+*/
+html {
+  scroll-behavior: smooth;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Prevent image dragging which ruins UI interactions */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
 }

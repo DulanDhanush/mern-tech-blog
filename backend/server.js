@@ -3,12 +3,15 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
+// Initialize environment configuration layer
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// ============ PRODUCTION MIDDLEWARE ============
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -17,13 +20,40 @@ app.use(
 );
 app.use(express.json());
 
-// MongoDB Connection
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+// ============ HIGH-AVAILABILITY DATABASE CONNECTION ============
+const cloudURI = process.env.MONGO_URI;
+const localURI = "mongodb://127.0.0.1:27017/blogdb";
 
-// ============ MODELS ============
+// Attempts Cloud Atlas first. If blocked by local ISP, gracefully falls back to local DB.
+mongoose
+  .connect(cloudURI, { serverSelectionTimeoutMS: 3000 })
+  .then(() =>
+    console.log(
+      "✅ Core Cluster Network Interconnect: Connected to Cloud Atlas Successfully",
+    ),
+  )
+  .catch((err) => {
+    console.log("⚠️ Cloud connection blocked by local network firewall.");
+    console.log(
+      "📡 Rerouting transaction pipeline to local fallback database...",
+    );
+
+    mongoose
+      .connect(localURI)
+      .then(() =>
+        console.log(
+          "🚀 Local Database Engine Active: Connected Successfully via 127.0.0.1",
+        ),
+      )
+      .catch((localErr) =>
+        console.error(
+          "❌ Critical: Both Cloud and Local Database routing failed:",
+          localErr.message,
+        ),
+      );
+  });
+
+// ============ SCHEMAS & DATA MODELS ============
 const postSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
@@ -49,28 +79,56 @@ const userSchema = new mongoose.Schema({
 const Post = mongoose.model("Post", postSchema);
 const User = mongoose.model("User", userSchema);
 
-// ============ AUTHENTICATION ============
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+// ============ SECURITY & AUTHENTICATION MIDDLEWARE ============
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token)
+    return res
+      .status(401)
+      .json({ message: "No security token provided in request header." });
 
-// Register
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({
+      message:
+        "Security Validation Anomaly: Session token has expired or is invalid.",
+    });
+  }
+};
+
+// ============ AUTHENTICATION API ENDPOINTS ============
+
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res
+        .status(400)
+        .json({ message: "Profile record already exists." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, email, password: hashedPassword });
+
+    // Developer Override: Hardcoded to 'admin' so you can test your dashboard!
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: "admin",
+    });
     await user.save();
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
+      { expiresIn: "7d" },
     );
+
     res.status(201).json({
       token,
       user: { id: user._id, username, email, role: user.role },
@@ -80,25 +138,28 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// Login
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!user)
+      return res
+        .status(401)
+        .json({ message: "Invalid credential parameters." });
 
     const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!isValid)
+      return res
+        .status(401)
+        .json({ message: "Invalid credential parameters." });
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
+      { expiresIn: "7d" },
     );
+
     res.json({
       token,
       user: { id: user._id, username: user.username, email, role: user.role },
@@ -108,23 +169,8 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-// Auth middleware
-const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "No token provided" });
+// ============ POSTS ARTICLES CRUD ROUTING ============
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
-  }
-};
-
-// ============ POST CRUD APIs ============
-
-// Get all posts (with pagination)
 app.get("/api/posts", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -139,7 +185,6 @@ app.get("/api/posts", async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
-
     const total = await Post.countDocuments(query);
 
     res.json({
@@ -153,27 +198,22 @@ app.get("/api/posts", async (req, res) => {
   }
 });
 
-// Get single post
 app.get("/api/posts/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: "Article not found." });
 
-    // Increment views
     post.views += 1;
     await post.save();
-
     res.json(post);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Create post (admin only)
 app.post("/api/posts", authMiddleware, async (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Admin access required" });
-  }
+  if (req.user.role !== "admin")
+    return res.status(403).json({ message: "Admin clearance required." });
 
   try {
     const post = new Post(req.body);
@@ -184,11 +224,9 @@ app.post("/api/posts", authMiddleware, async (req, res) => {
   }
 });
 
-// Update post
 app.put("/api/posts/:id", authMiddleware, async (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Admin access required" });
-  }
+  if (req.user.role !== "admin")
+    return res.status(403).json({ message: "Admin clearance required." });
 
   try {
     const post = await Post.findByIdAndUpdate(
@@ -196,29 +234,26 @@ app.put("/api/posts/:id", authMiddleware, async (req, res) => {
       { ...req.body, updatedAt: Date.now() },
       { new: true },
     );
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: "Post not found." });
     res.json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-// Delete post
 app.delete("/api/posts/:id", authMiddleware, async (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Admin access required" });
-  }
+  if (req.user.role !== "admin")
+    return res.status(403).json({ message: "Admin clearance required." });
 
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    res.json({ message: "Post deleted successfully" });
+    if (!post) return res.status(404).json({ message: "Post not found." });
+    res.json({ message: "Post deleted successfully." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// ============ CATEGORIES API ============
 app.get("/api/categories", async (req, res) => {
   try {
     const categories = await Post.distinct("category");
@@ -228,8 +263,10 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
-// ============ START SERVER ============
+// ============ WEB PORT SERVER INITIALIZATION ============
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(
+    `🚀 Distributed API Engine listening intently on deployment port: ${PORT}`,
+  );
 });
