@@ -226,4 +226,4 @@ mern-tech-blog/
 - Vercel for effortless hosting.
 - The open‑source MERN community for endless inspiration.
 
-<div align="center"> <sub>Built with ☕ and a lot of ⌨️ by Team Code Blooded.</sub> </div> ```
+<div align="center"> <sub>Built with ☕ and a lot of ⌨️ by Team Code Blooded.</sub> </div> 
