@@ -197,12 +197,6 @@ mern-tech-blog/
 └── README.md                 # You are here
 ```
 
----
-### 🎥 Demo Video
-
-
-
----
 
 ### 👥 Meet the Engineering Team
 
