@@ -145,10 +145,9 @@ const Admin = () => {
           )}
         </div>
 
-        {/* FIX 1: Added mb-12 to form */}
         <form onSubmit={handleSubmit} className="space-y-6 mb-12">
-          {/* FIX 2: Added items-stretch to grid */}
           <div className="grid md:grid-cols-2 gap-6 items-stretch">
+            {/* Left column - unchanged */}
             <div className="space-y-6">
               <input
                 type="text"
@@ -203,7 +202,8 @@ const Admin = () => {
               </div>
             </div>
 
-            <div className="space-y-6">
+            {/* Right column - FIXED for overlap */}
+            <div className="flex flex-col space-y-6 min-h-0">
               <div className="flex gap-2 border-b border-white/10">
                 <button
                   type="button"
@@ -237,11 +237,11 @@ const Admin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, content: e.target.value })
                   }
-                  className="input-field h-full font-mono text-sm leading-relaxed"
+                  className="input-field flex-1 font-mono text-sm leading-relaxed min-h-0"
                   required
                 />
               ) : (
-                <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-a:text-primary hover:prose-a:text-secondary prose-img:rounded-xl prose-img:shadow-lg prose-pre:bg-card prose-pre:border prose-pre:border-white/10 bg-card/30 rounded-xl p-6 min-h-[300px] border border-white/5 overflow-auto">
+                <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-a:text-primary hover:prose-a:text-secondary prose-img:rounded-xl prose-img:shadow-lg prose-pre:bg-card prose-pre:border prose-pre:border-white/10 bg-card/30 rounded-xl p-6 border border-white/5 min-h-0 overflow-auto">
                   <ReactMarkdown>
                     {formData.content || "*Nothing to preview yet*"}
                   </ReactMarkdown>
@@ -250,6 +250,7 @@ const Admin = () => {
             </div>
           </div>
 
+          {/* Three‑input row with Read Time number field */}
           <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/5">
             <input
               type="text"
