@@ -10,7 +10,7 @@ import {
   Image as ImageIcon,
   X,
 } from "lucide-react";
-import ReactMarkdown from "react-markdown"; // <-- NEW IMPORT
+import ReactMarkdown from "react-markdown";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
@@ -19,7 +19,7 @@ const Admin = () => {
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [previewMode, setPreviewMode] = useState(false); // <-- NEW STATE
+  const [previewMode, setPreviewMode] = useState(false);
 
   const initialFormState = {
     title: "",
@@ -103,7 +103,7 @@ const Admin = () => {
     setIsEditing(false);
     setEditingId(null);
     setFormData(initialFormState);
-    setPreviewMode(false); // reset preview tab when form resets
+    setPreviewMode(false);
   };
 
   return (
@@ -145,8 +145,10 @@ const Admin = () => {
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+        {/* FIX 1: Added mb-12 to form */}
+        <form onSubmit={handleSubmit} className="space-y-6 mb-12">
+          {/* FIX 2: Added items-stretch to grid */}
+          <div className="grid md:grid-cols-2 gap-6 items-stretch">
             <div className="space-y-6">
               <input
                 type="text"
@@ -202,7 +204,6 @@ const Admin = () => {
             </div>
 
             <div className="space-y-6">
-              {/* Tab buttons */}
               <div className="flex gap-2 border-b border-white/10">
                 <button
                   type="button"
