@@ -10,6 +10,7 @@ import {
   Image as ImageIcon,
   X,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown"; // <-- NEW IMPORT
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
@@ -18,6 +19,7 @@ const Admin = () => {
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [previewMode, setPreviewMode] = useState(false); // <-- NEW STATE
 
   const initialFormState = {
     title: "",
@@ -101,6 +103,7 @@ const Admin = () => {
     setIsEditing(false);
     setEditingId(null);
     setFormData(initialFormState);
+    setPreviewMode(false); // reset preview tab when form resets
   };
 
   return (
@@ -199,16 +202,50 @@ const Admin = () => {
             </div>
 
             <div className="space-y-6">
-              <textarea
-                placeholder="Write your content here (Markdown supported)..."
-                rows={12}
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData({ ...formData, content: e.target.value })
-                }
-                className="input-field h-full font-mono text-sm leading-relaxed"
-                required
-              />
+              {/* Tab buttons */}
+              <div className="flex gap-2 border-b border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode(false)}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    !previewMode
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-textSecondary hover:text-white"
+                  }`}
+                >
+                  Write
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode(true)}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    previewMode
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-textSecondary hover:text-white"
+                  }`}
+                >
+                  Preview
+                </button>
+              </div>
+
+              {!previewMode ? (
+                <textarea
+                  placeholder="Write your content here (Markdown supported)..."
+                  rows={12}
+                  value={formData.content}
+                  onChange={(e) =>
+                    setFormData({ ...formData, content: e.target.value })
+                  }
+                  className="input-field h-full font-mono text-sm leading-relaxed"
+                  required
+                />
+              ) : (
+                <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-a:text-primary hover:prose-a:text-secondary prose-img:rounded-xl prose-img:shadow-lg prose-pre:bg-card prose-pre:border prose-pre:border-white/10 bg-card/30 rounded-xl p-6 min-h-[300px] border border-white/5 overflow-auto">
+                  <ReactMarkdown>
+                    {formData.content || "*Nothing to preview yet*"}
+                  </ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
 
